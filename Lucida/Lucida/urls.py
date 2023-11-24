@@ -16,11 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AIS_Dreaming.views import upload_and_display
+from AIS_Dreaming.views import *
+from Home.views import *
+from Person.views import *
+from Dream_Society.views import *
+from Dreamvista_journel.views import *
+from Dreamworks.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload_and_display/', upload_and_display, name='upload_and_display'),
+    path('',intro,name='intro'),
+    path('home',home,name='home'),
 ]
 
 

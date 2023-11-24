@@ -1,93 +1,136 @@
-import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
-import IPython.display as display
-import PIL.Image as Image
+import PIL.Image
+import tensorflow as tf
 import urllib.request
 import os
 import zipfile
-import time
+import io
 
-def deep_dream_single_function(url, max_dim=500, steps=100, step_size=0.01):
-    def download(url, max_dim=None):
-        name = url.split('/')[-1]
-        image_path = tf.keras.utils.get_file(name, origin=url)
-        img = Image.open(image_path)
-        if max_dim:
-            img.thumbnail((max_dim, max_dim))
-        return np.array(img)
+def deep_dream_from_url(image_url):
+    # Helper functions for TF Graph visualization
+    def strip_consts(graph_def, max_const_size=32):
+        strip_def = tf.GraphDef()
+        for n0 in graph_def.node:
+            n = strip_def.node.add()
+            n.MergeFrom(n0)
+            if n.op == 'Const':
+                tensor = n.attr['value'].tensor
+                size = len(tensor.tensor_content)
+                if size > max_const_size:
+                    tensor.tensor_content = "<stripped %d bytes>" % size
+        return strip_def
 
-    def deprocess(img):
-        img = 255 * (img + 1.0) / 2.0
-        return tf.cast(img, tf.uint8)
+    def rename_nodes(graph_def, rename_func):
+        res_def = tf.GraphDef()
+        for n0 in graph_def.node:
+            n = res_def.node.add()
+            n.MergeFrom(n0)
+            n.name = rename_func(n.name)
+            for i, s in enumerate(n.input):
+                n.input[i] = rename_func(s) if s[0] != '^' else '^' + rename_func(s[1:])
+        return res_def
 
-    def show(img):
-        display.display(Image.fromarray(np.array(img)))
+    def showarray(a):
+        a = np.uint8(np.clip(a, 0, 1) * 255)
+        PIL.Image.fromarray(a).show()
 
-    def deep_dream(img, steps=100, step_size=0.01):
-        img = tf.keras.applications.inception_v3.preprocess_input(img)
-        img = tf.convert_to_tensor(img)
-        step_size = tf.convert_to_tensor(step_size)
-        steps_remaining = steps
-        step = 0
-        while steps_remaining:
-            if steps_remaining > 100:
-                run_steps = tf.constant(100)
-            else:
-                run_steps = tf.constant(steps_remaining)
-            steps_remaining -= run_steps
-            step += run_steps
+    def visstd(a, s=0.1):
+        return (a - a.mean()) / max(a.std(), 1e-4) * s + 0.5
 
-            loss, img = deepdream(img, run_steps, tf.constant(step_size))
+    def T(layer):
+        return graph.get_tensor_by_name("import/%s:0" % layer)
 
-            display.clear_output(wait=True)
-            show(deprocess(img))
-            print("Step {}, loss {}".format(step, loss))
+    def render_naive(t_obj, img0=img_noise, iter_n=20, step=1.0):
+        t_score = tf.reduce_mean(t_obj)
+        t_grad = tf.gradients(t_score, t_input)[0]
 
-        result = deprocess(img)
-        display.clear_output(wait=True)
-        show(result)
+        img = img0.copy()
+        for _ in range(iter_n):
+            g, _ = sess.run([t_grad, t_score], {t_input: img})
+            g /= g.std() + 1e-8
+            img += g * step
+        showarray(visstd(img))
 
-        return result
+    def tffunc(*argtypes):
+        placeholders = list(map(tf.placeholder, argtypes))
+        def wrap(f):
+            out = f(*placeholders)
+            def wrapper(*args, **kw):
+                return out.eval(dict(zip(placeholders, args)), session=kw.get('session'))
+            return wrapper
+        return wrap
 
-    def run_deep_dream_simple(img, steps=100, step_size=0.01):
-        img = deep_dream(img, steps, step_size)
-        return img
+    def resize(img, size):
+        img = tf.expand_dims(img, 0)
+        return tf.image.resize_bilinear(img, size)[0, :, :, :]
+    resize = tffunc(np.float32, np.int32)(resize)
 
-    url = 'https://storage.googleapis.com/download.tensorflow.org/example_images/YellowLabradorLooking_new.jpg'
-    original_img = download(url, max_dim=max_dim)
-    show(original_img)
+    def calc_grad_tiled(img, t_grad, tile_size=512):
+        sz = tile_size
+        h, w = img.shape[:2]
+        sx, sy = np.random.randint(sz, size=2)
+        img_shift = np.roll(np.roll(img, sx, 1), sy, 0)
+        grad = np.zeros_like(img)
+        for y in range(0, max(h - sz // 2, sz), sz):
+            for x in range(0, max(w - sz // 2, sz), sz):
+                sub = img_shift[y:y + sz, x:x + sz]
+                g = sess.run(t_grad, {t_input: sub})
+                grad[y:y + sz, x:x + sz] = g
+        return np.roll(np.roll(grad, -sx, 1), -sy, 0)
 
-    base_model = tf.keras.applications.InceptionV3(include_top=False, weights='imagenet')
-    names = ['mixed3', 'mixed5']
-    layers = [base_model.get_layer(name).output for name in names]
+    def render_deepdream(t_obj, img0=img_noise, iter_n=10, step=1.5, octave_n=4, octave_scale=1.4):
+        t_score = tf.reduce_mean(t_obj)
+        t_grad = tf.gradients(t_score, t_input)[0]
 
-    dream_model = tf.keras.Model(inputs=base_model.input, outputs=layers)
+        img = img0
+        octaves = []
+        for _ in range(octave_n - 1):
+            hw = img.shape[:2]
+            lo = resize(img, np.int32(np.float32(hw) / octave_scale))
+            hi = img - resize(lo, hw)
+            img = lo
+            octaves.append(hi)
 
-    deepdream = deep_dream(dream_model)
+        for octave in range(octave_n):
+            if octave > 0:
+                hi = octaves[-octave]
+                img = resize(img, hi.shape[:2]) + hi
+            for _ in range(iter_n):
+                g = calc_grad_tiled(img, t_grad)
+                img += g * (step / (np.abs(g).mean() + 1e-7))
+            showarray(img / 255.0)
 
-    img = run_deep_dream_simple(img=original_img, steps=steps, step_size=step_size)
+    # Step 1 - Download image from the given URL
+    img_content = urllib.request.urlopen(image_url).read()
+    img0 = PIL.Image.open(io.BytesIO(img_content))
+    img0 = np.float32(img0)
 
-    start = time.time()
-    OCTAVE_SCALE = 1.30
+    img_noise = np.random.uniform(size=img0.shape) + 100.0
+    # Step 2 - Download and set up the Inception model
+    url = 'https://storage.googleapis.com/download.tensorflow.org/models/inception5h.zip'
+    data_dir = '../data/'
+    model_name = os.path.split(url)[-1]
+    local_zip_file = os.path.join(data_dir, model_name)
+    if not os.path.exists(local_zip_file):
+        model_url = urllib.request.urlopen(url)
+        with open(local_zip_file, 'wb') as output:
+            output.write(model_url.read())
+        with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
 
-    img = tf.constant(np.array(original_img))
-    base_shape = tf.shape(img)[:-1]
-    float_base_shape = tf.cast(base_shape, tf.float32)
+    # Step 3 - Creating Tensorflow session and loading the model
+    graph = tf.Graph()
+    sess = tf.InteractiveSession(graph=graph)
+    with tf.gfile.FastGFile(os.path.join(data_dir, 'tensorflow_inception_graph.pb'), 'rb') as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+    t_input = tf.placeholder(np.float32, name='input')
+    imagenet_mean = 117.0
+    t_preprocessed = tf.expand_dims(t_input - imagenet_mean, 0)
+    tf.import_graph_def(graph_def, {'input': t_preprocessed})
 
-    for n in range(-2, 3):
-        new_shape = tf.cast(float_base_shape * (OCTAVE_SCALE ** n), tf.int32)
+    # Step 4 - Apply gradient ascent to that layer
+    render_deepdream(tf.square(T('mixed4c')), img0)
 
-        img = tf.image.resize(img, new_shape).numpy()
-
-        img = run_deep_dream_simple(img=img, steps=50, step_size=0.01)
-
-    display.clear_output(wait=True)
-    img = tf.image.resize(img, base_shape)
-    img = tf.image.convert_image_dtype(img / 255.0, dtype=tf.uint8)
-    show(img)
-
-    end = time.time()
-    print("Time taken:", end - start)
-
-deep_dream_single_function('https://storage.googleapis.com/download.tensorflow.org/example_images/YellowLabradorLooking_new.jpg', max_dim=500, steps=100, step_size=0.01)
+# Example usage:
+deep_dream_from_url('https://example.com/path/to/your/image.jpg')
