@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload and Display Image</title>
+</head>
+<body>
+    <h2>Upload Image</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Latest Uploaded Image</h2>
+    {% if latest_image %}
+        <img src="{{ latest_image.image.url }}" alt="Latest Uploaded Image">
+    {% else %}
+        <p>No images uploaded yet.</p>
+    {% endif %}
+</body>
+</html>
