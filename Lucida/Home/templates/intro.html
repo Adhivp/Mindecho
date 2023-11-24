@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lucida</title>
+  
+</head>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  
+  .video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+  }
+  
+  .container {
+    perspective: 800px;
+    width: 300px;
+    height: 300px;
+    position: relative;
+    margin: 100px auto;
+  }
+  .image.rotate {
+    transform: rotateY(180deg);
+  }
+  .image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transition: transform 0.5s ease-in-out;
+  }
+  .image.clicked {
+    transform: rotateY(180deg);
+  }
+  
+  .logo.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  .start-button {
+    background-color: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+  }
+  .start-button:hover {
+  background-color: #fff;
+  color: #000;
+}
+  .logo {
+    font-size: 50px;
+    color: #3498db;
+    letter-spacing: 0.1px;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    margin-top: 10px; /* Reduced distance */
+  }
+  
+  .image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transition: transform 0.5s ease-in-out;
+    cursor: pointer; /* Cursor pointer on logo */
+  }
+  
+  
+  .logo span {
+    display: inline-block;
+    opacity: 0;
+    animation: alternateAnimateLogo 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes alternateAnimateLogo {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .logo span:nth-child(1) { animation-delay: 0.1s; }
+  .logo span:nth-child(2) { animation-delay: 0.2s; }
+  .logo span:nth-child(3) { animation-delay: 0.3s; }
+  .logo span:nth-child(4) { animation-delay: 0.4s; }
+  .logo span:nth-child(5) { animation-delay: 0.5s; }
+  .logo span:nth-child(6) { animation-delay: 0.6s; }
+
+  /* Existing styles remain the same */
+
+.logo {
+  font-size: 50px;
+  color: #3498db;
+  letter-spacing: 0.1px;
+  text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  margin-top: 10px; /* Reduced distance */
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transition: transform 1s ease-in-out;
+  cursor: pointer; /* Cursor pointer on logo */
+}
+
+.image.rotate {
+  transform: rotateY(720deg);
+}
+.start-button {
+  background-color: transparent;
+  border: none;
+  color: rgb(46, 44, 0);
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+}
+
+.start-button:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+  
+</style>
+<body>
+  <div class="video-container">
+    <video autoplay muted loop>
+      <source src="bgvideo.mp4" type="video/mp4">
+      <!-- Add alternative video formats if needed -->
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="container">
+    <img src="logo.png" alt="Your Image" class="image">
+  </div>
+
+  <div class="logo">
+    <span style="font-weight: bold;color: yellow;">L</span>
+    <span style="font-weight: bold;color: yellow;">u</span>
+    <span style="font-weight: bold;color: yellow;">c</span>
+    <span style="font-weight: bold;color: rgb(245, 245, 242);">i</span>
+    <span style="font-weight: bold;color: yellow;">d</span>
+    <span style="font-weight: bold;color: rgb(245, 245, 242);">a</span>
+  </div>
+  <div>
+    <button class="start-button" style="background-color: rgb(249, 82, 5); bottom: 40px; align-items: center; border-radius: 35px;">Get Started</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
