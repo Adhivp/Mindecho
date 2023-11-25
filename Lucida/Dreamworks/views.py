@@ -12,7 +12,7 @@ def dreamworks(request):
 
     if request.method == 'POST':
         prompt = request.POST.get('prompt')
-        prompt = "DREAM"
+        prompt += "DREAM"
         url = "https://api.getimg.ai/v1/stable-diffusion/text-to-image"
 
         payload = {
