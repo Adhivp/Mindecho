@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home</title>
+  <style>
+    /* Resetting default margin and padding */
+  .body{
+    /* Styles for the box */
+    font-family: Arial, sans-serif;
+    background-color: #F4CE14;
+    color: #F4CE14;
+    align-items: center;
+    align-content: center;
+    }
+    .typing-animation {
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    h1 {
+    color: #000000;
+    }
+
+    nav {
+    background-color: #000000;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-size: 19px;
+    }
+
+    nav ul {
+      list-style: none;
+    }
+
+    nav ul li {
+      display: inline;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      padding: 20px 20px;
+    }
+    nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Change background color on hover */
+  border-radius: 5px; /* Rounded corners */
+}
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 45px;
+    }
+
+    .logo-text {
+      margin-left: 10px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 50px;
+      text-align: center;
+    }
+
+    .content h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      color: #000000;
+    }
+    .content h2 {
+      font-size: 22px;
+      margin-bottom: 1px;
+      color:#f6ecba ;
+    }
+    .content h3 {
+      font-size: 32px;
+      color:#F4CE14 ;
+    }
+
+    .content p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #070707;
+    }
+
+    .container {
+      width: 96%; /* Adjusted container width */
+      margin: 30px auto; /* Centering the container */
+      background-color: #fff; /* White background */
+      padding: 30px;
+      border-radius: 35px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Added shadow */
+      background-image: url("https://img.freepik.com/free-vector/geometric-background-vector-white-cube-patterns_53876-126683.jpg?w=1060&t=st=1700876862~exp=1700877462~hmac=f92c9ced54378afbdfde63627d87fb2a027efd67a62c37e6a721cd38863112a9");
+    }
+    .containerx{
+      width: 96%; /* Adjusted container width */
+      margin: 8px auto; /* Centering the container */
+      background-color: #ffffff; /* White background */
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Added shadow */
+      background-image: url("https://img.freepik.com/free-vector/geometric-background-vector-white-cube-patterns_53876-126683.jpg?w=1060&t=st=1700876862~exp=1700877462~hmac=f92c9ced54378afbdfde63627d87fb2a027efd67a62c37e6a721cd38863112a9");
+    }
+    .containerxin {
+      width: 98%; /* Adjusted container width */
+      margin: 5px; /* Centering the container */
+      background-color: #020202; /* White background */
+      padding: 10px 10px;
+      border-radius: 15px;
+    }
+</style>
+</head>
+<body bgcolor="#F4CE14">
+  <nav>
+    <div class="logo">
+      <img src="https://i.ibb.co/nPWYkmD/logo.png" alt="Lucida">
+      <span class="logo-text">Lucida</span>
+    </div>
+    <ul>
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Contents</a></li>
+      <li><a href="#">Logout</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="conten">
+      <h1>Welcomes you,Lucida!</h1>
+    </div>
+  </div>
+  <div class="containerx"><div class="containerxin">
+    <div class="content">
+        <span class="typing-animation"></span>
+      <h2>What is lucid dreaming?<br>
+        <span id="typing-text" class="typed-text">
+          <!--  Lucid dreaming is a captivating state where individuals are consciously aware of being in a dream, often accompanied by the ability to control the dream environment. This phenomenon involves vivid sensory experiences and heightened emotions, with improved dream recall. While it can occur spontaneously, some actively use techniques like reality checks and dream journaling to induce lucid dreams. Beyond entertainment, lucid dreaming intrigues researchers for its insights into consciousness and applications in problem-solving. This unique blend of self-awareness and imaginative control offers a fascinating avenue for creative expression and self-discovery within the realm of dreaming.-->
+        </span>
+    </span> 
+    </h2>
+    </div></div>
+  </div>
+  <div class="containery">
+    <div class="content">
+      <h2>
+            <span id="typing-text" class="typing-animation"></span>
+      </h2>
+    </div>
+  </div>
+  <script>
+    const text = "Lucid dreaming is a captivating state where individuals are consciously aware of being in a dream, often accompanied by the ability to control the dream environment. This phenomenon involves vivid sensory experiences and heightened emotions, with improved dream recall. While it can occur spontaneously, some actively use techniques like reality checks and dream journaling to induce lucid dreams. Beyond entertainment, lucid dreaming intrigues researchers for its insights into consciousness and applications in problem-solving. This unique blend of self-awareness and imaginative control offers a fascinating avenue for creative expression and self-discovery within the realm of dreaming.";
+    let index = 0;
+    const speed = 7; // Adjust typing speed (in milliseconds)
+
+    function typeWriter() {
+      if (index < text.length) {
+        document.getElementById('typing-text').innerHTML += text.charAt(index);
+        index++;
+        setTimeout(typeWriter, speed);
+      }
+    }
+
+    // Start typing animation when the page loads
+    window.onload = function() {
+      typeWriter();
+    };
+  </script>
+</body>
+</html>
