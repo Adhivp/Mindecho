@@ -28,7 +28,9 @@ urlpatterns = [
     path('',intro,name='intro'),
     path('home',home,name='home'),
     path('journal_input',journal_input,name='journal_input'),
-    path('journal_view',journal_view,name='journal_view')
+    path('journal_view',journal_view,name='journal_view'),
+    path('dreamworks',dreamworks,name="dreamworks"),
+    path('about',about,name="about")
 ]
 
 
