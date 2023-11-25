@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucid Dream Text to Image</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4ce14;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #dreamForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        #prompt {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 300px;
+        }
+
+        #generateBtn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #resultImage {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #loadingSpinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Lucid Dream Text to Image</h1>
+
+    <!-- Form to generate the image -->
+    <form id="dreamForm" method="post" action="{% url 'generate_image' %}">
+
+        <label for="prompt">Enter your lucid dream prompt:</label>
+        <textarea id="prompt" name="prompt" required></textarea><br>
+        <button id="generateBtn" type="button" onclick="generateImage()">Generate Image</button>
+    </form>
+
+    <!-- Display the generated image or loading spinner -->
+    <div id="resultImage"></div>
+    <div id="loadingSpinner"></div>
+
+    <script>
+        function generateImage() {
+            var promptText = document.getElementById("prompt").value;
+            var apiUrl = "https://api.getimg.ai/v1/stable-diffusion/text-to-image";
+            var payload = {
+                "output_format": "jpeg",
+                "prompt": promptText
+            };
+
+            // Display loading spinner
+            document.getElementById("loadingSpinner").style.display = "block";
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Include any necessary authorization headers
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Create an object URL from the blob
+                var imageUrl = URL.createObjectURL(blob);
+
+                // Hide loading spinner
+                document.getElementById("loadingSpinner").style.display = "none";
+
+                // Display the image
+                document.getElementById("resultImage").innerHTML = `<img src="${imageUrl}" alt="Generated Image">`;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Hide loading spinner in case of an error
+                document.getElementById("loadingSpinner").style.display = "none";
+            });
+        }
+    </script>
+</body>
+</html>
