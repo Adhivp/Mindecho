@@ -11,7 +11,14 @@
     padding: 0;
     height: 100%;
   }
-  
+  video{
+    min-width:100%;
+    min-height:100%;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%)
+}
   .video-container {
     position: fixed;
     top: 0;
@@ -146,9 +153,7 @@
   background-color: #fff;
   color: #000;
 }
-body{
-  background-image: url('https://i.ibb.co/4FtS18q/7c1b531215f46e431dc42587b6601988.jpg');
-}
+
   
 </style>
 <script>
@@ -170,7 +175,8 @@ body{
 <body>
   <div class="video-container">
     <video autoplay muted loop>
-  
+      "{% load static %}"
+    <source src = "{% static 'bgvideo.mp4' %}" alt="BGvideo">
       Your browser does not support the video tag.
     </video>
   </div>
