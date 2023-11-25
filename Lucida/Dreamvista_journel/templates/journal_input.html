@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Jounrnal input</title>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>My Journal</title>
     <style>
         body {
             /* Styles for the box */
@@ -15,45 +17,45 @@
             color: #000000;
         }
         nav {
-            background-color: #000000;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-        }
+      background-color: #000000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+    }
 
-        nav ul {
-            list-style: none;
-        }
+    nav ul {
+      list-style: none;
+    }
 
-        nav ul li {
-            display: inline;
-        }
+    nav ul li {
+      display: inline;
+    }
 
-        nav ul li a {
-            text-decoration: none;
-            color: white;
-            padding: 20px 20px;
-        }
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      padding: 20px 20px;
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-        }
+    .logo {
+      display: flex;
+      align-items: center;
+    }
 
-        .logo img {
-            height: 45px;
-        }
+    .logo img {
+      height: 45px;
+    }
 
-        .logo-text {
-            margin-left: 10px;
-            font-size: 20px;
-            font-weight: bold;
-        }
+    .logo-text {
+      margin-left: 10px;
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-        /* Style the search bar */
-        .search-bar {
+    /* Style the search bar */
+    .search-bar {
             display: flex;
             align-items:center;
             width: 320px;
@@ -76,61 +78,36 @@
         }
 
         .search-bar button {
-            background-color: #080808;
+            background-color: #007bff;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 0 25px 25px 0;
             cursor: pointer;
         }
+
+    /* Style the content area */
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
         .box {
             display: flex;
-            padding:20px;
-            flex-direction: column; /* Aligns containers vertically */
+            justify-content: center;
+            align-items: center;
+            height: 80vh; /* Adjust the height of the box */
         }
         .container {
             width: 35%; /* Adjust the width of the container */
             height: 60%; /* Adjust the height of the container */
             background-color: #000000;
+            align-items: center;
             display: flex;
+            justify-content: center;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 35px;
             box-shadow: 100px ;
-            margin-bottom: 20px; /* Adds space between containers */
-        }
-        .containers {
-            width: 80%; /* Adjust the width of the container */
-            height: 100%; /* Adjust the height of the container */
-            background-color: #000000;
-            display: flex;
-            padding: 60px;
-            border-radius: 15px;
-            box-shadow: 100px ;
-            margin-bottom: 20px; /* Adds space between containers */
-            border-radius: 15px;
-        }
-        .text{
-            width: 10%; /* Adjust the width of the container */
-            height: 30%; /* Adjust the height of the container */
-            background-color: #000000;
-            padding: 10px;
-            box-shadow: 100px ;
-            border-radius: 15px;
-
-        }
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 20px 50px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            /* Additional Styles */
-            font-family: Arial, sans-serif; /* Font Family */
-            font-size: 14px; /* Font Size */
-            resize: vertical; /* Allow vertical resizing for textarea */
+    
         }
         #journal-entry {
             width: 100%;
@@ -175,41 +152,58 @@
             padding: 15px;
             margin-bottom: 35px;
             border-radius: 35px;
-
+        }
+        .entry-container strong {
+            color: #da1919;
         }
         .entry-container h2 {
             color: #000000;
         }
     </style>
 </head>
-<body>
-<nav>
-    <div class="logo">
-        <img src="https://i.ibb.co/nPWYkmD/logo.png" alt="Lucida">
-        <span class="logo-text">Lucida</span>
-    </div>
-</nav>
-<div class="box">
-    <div class="container">
-    <form id="journal-form" method="post">
-        <!-- Use type="date" to create a date input field -->
-        <label for="entry-date">Date:</label>
-        <input type="date" id="entry-date" name="entry-date">
-        <button type="submit">Enter</button>
-    </div>
-    </form>
-    <div class="containers">
-        <form id="journal-form" method="post">
-            <label for="title">Title:</label>
-            <div class="text"><input type="text" name="Title"></div>
+<body >
+    <nav>
+        <div class="logo">
+          <img src="https://i.ibb.co/nPWYkmD/logo.png" alt="Lucida">
+          <span class="logo-text">Lucida</span>
+        </div>
+        <!-- 
+        <div class="search-bar">
+          <input type="text" placeholder="Search...">
+        </div> -->
+        <!--
+        <ul>
+          <li><a href="#" class="active">Home</a></li>
+          <li><a href="#">Contents</a></li>
+          <li><a href="#">Logout</a></li>
+          <li><a href="#">About</a></li>
+         --> 
+        </ul>
+      </nav>
+      <h1>Journal</h1>
+    <div class="box">
+        <div class="container">
+            <form id="journal-form" method="post">
+                {% csrf_token %}
+            
+                
+                <label for="entry-date">Date:</label>
+                <input type="date" id="entry-date" name="entry-date">
+            
+                <label>Title:</label>
+                <textarea id="enter-title" name="enter-title" placeholder="Enter title"></textarea>
+            
+                <label>Journal:</label>
+                <textarea id="journal-entry" name="journal-entry" placeholder="Write your journal entry..."></textarea>
+            
+                <button type="submit">Save Entry</button>
             </form>
-    </div>
-    <div class="containers">
-        <form id="journal-form" method="post">
-            <label for="Contents">Contents:</label>
-            <div class="text"><input type="text" name="Contents"></div>
-            </form>
+
+    <div id="journal-entries">
+        <!-- Journal entries will be displayed here -->
     </div>
 </div>
+    </div>
+   
 </body>
 </html>

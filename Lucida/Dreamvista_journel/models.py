@@ -4,5 +4,5 @@ from django.db import models
 
 class journel(models.Model):
     date = models.DateField()
-    title = models.CharField(max_length= 250)
+    title = models.CharField(max_length= 250,null=True)
     experience = models.TextField()
